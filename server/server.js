@@ -25,7 +25,7 @@ import { buildSmtpCandidates } from './lib/smtp.js';
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const app = express();
 const PORT = process.env.PORT || 4000;
-const CLIENT_ORIGIN = process.env.CLIENT_ORIGIN || 'http://localhost:5173';
+const CLIENT_ORIGIN = process.env.CLIENT_ORIGIN || 'https://ifex.kesug.com';
 
 // --- Core middleware -------------------------------------------------------
 app.use(helmet({ crossOriginResourcePolicy: false }));
@@ -115,9 +115,9 @@ const smtpCandidates = buildSmtpCandidates({
         auth: smtpAuth,
         tls: cfg.tls || undefined,
         // short timeouts to fail fast and get actionable logs
-        connectionTimeout: 10000,
-        greetingTimeout: 10000,
-        socketTimeout: 10000,
+        connectionTimeout: 60000,
+        greetingTimeout: 60000,
+        socketTimeout: 60000,
         logger: false,
         debug: false,
       });
