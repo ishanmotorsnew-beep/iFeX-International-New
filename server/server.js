@@ -20,6 +20,7 @@ import {
 } from './contentStore.js';
 import { verifyPassword, issueToken, revokeToken, requireAdmin } from './auth.js';
 import { buildPublicImageUrl } from './lib/imageUrls.js';
+import { buildSmtpCandidates } from './lib/smtp.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const app = express();
@@ -87,17 +88,24 @@ const CONTACT_RECEIVER_EMAIL = process.env.CONTACT_RECEIVER_EMAIL || SMTP_USER;
 // Create transporter with a fallback (try configured port first, then 587)
 let transporter;
 const smtpHost = process.env.SMTP_HOST;
-const configuredPort = Number(process.env.SMTP_PORT) || 465;
+const configuredPort = Number(process.env.SMTP_PORT);
 const configuredSecure = process.env.SMTP_SECURE !== 'false';
 const smtpAuth = { user: SMTP_USER, pass: process.env.SMTP_PASS };
 
-const smtpCandidates = [
-  { host: smtpHost, port: configuredPort, secure: configuredSecure },
-  // fallback: submission port with STARTTLS
-  { host: smtpHost, port: 587, secure: false, tls: { ciphers: 'TLSv1.2' } },
-];
+const smtpCandidates = buildSmtpCandidates({
+  host: smtpHost,
+  port: configuredPort,
+  secure: configuredSecure,
+  user: SMTP_USER,
+  pass: process.env.SMTP_PASS,
+});
 
 (async function initSmtp() {
+  if (!smtpCandidates.length) {
+    console.warn('SMTP credentials are not configured. Contact email sending is disabled until SMTP_HOST, SMTP_USER, and SMTP_PASS are set.');
+    return;
+  }
+
   for (const cfg of smtpCandidates) {
     try {
       const candidate = nodemailer.createTransport({
@@ -189,6 +197,13 @@ app.post('/api/contact', contactLimiter, contactValidationRules, async (req, res
   }
 
   const { name, email, phone, company, service, budget, message } = req.body;
+
+  if (!transporter) {
+    return res.status(503).json({
+      success: false,
+      message: 'Email delivery is currently unavailable because SMTP is not configured correctly.',
+    });
+  }
 
   try {
     const info = await transporter.sendMail({

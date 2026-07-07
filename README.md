@@ -53,7 +53,8 @@ cp .env.example .env
 Open `.env` and fill in:
 
 - `SMTP_HOST`, `SMTP_PORT`, `SMTP_SECURE`, `SMTP_USER`, `SMTP_PASS` — your
-  SMTP provider credentials (Gmail, SendGrid, Amazon SES, Postmark, etc.)
+  SMTP provider credentials (Gmail, SendGrid, Amazon SES, Postmark, etc.). For Gmail,
+  use an app password and either `465`/`true` or `587`/`false`.
 - `CONTACT_RECEIVER_EMAIL` — the inbox that should receive new inquiries
 - `CONTACT_SENDER_EMAIL` — the "from" address used when sending mail
 - `CLIENT_ORIGIN` — the frontend origin allowed by CORS (defaults to
