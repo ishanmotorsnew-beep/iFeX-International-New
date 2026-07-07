@@ -33,6 +33,8 @@ const INITIAL_STATE = {
   message: '',
 };
 
+const WEB3FORMS_ACCESS_KEY = 'de238b20-623f-4602-a6f8-9c6dd50eb1da';
+
 function validate(values) {
   const errors = {};
   if (!values.name.trim()) errors.name = 'Name is required.';
@@ -77,15 +79,20 @@ export default function ContactForm() {
     setServerMessage('');
 
     try {
-      const response = await fetch('/api/contact', {
+      const formData = new FormData();
+      Object.entries(values).forEach(([key, value]) => {
+        if (value) formData.append(key, value);
+      });
+      formData.append('access_key', WEB3FORMS_ACCESS_KEY);
+
+      const response = await fetch('https://api.web3forms.com/submit', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(values),
+        body: formData,
       });
 
       const data = await response.json().catch(() => ({}));
 
-      if (!response.ok) {
+      if (!response.ok || !data?.success) {
         throw new Error(data?.message || 'Something went wrong. Please try again.');
       }
 
