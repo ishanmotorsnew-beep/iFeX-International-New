@@ -63,8 +63,8 @@ export default function GlobeCanvas({ onSettle }) {
     window.addEventListener('resize', handleResize);
 
     // Globe parameters
-    const GLOBE_RADIUS = 160;
-    const CAMERA_DIST = 600;
+    const GLOBE_RADIUS = 210;
+    const CAMERA_DIST = 760;
     
     // Generate particles
     const particles = [];

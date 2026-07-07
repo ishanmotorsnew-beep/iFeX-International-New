@@ -97,10 +97,10 @@ export default function Hero() {
                 {/* Headline */}
                 <motion.h1
                   variants={itemVariants}
-                  className="font-display text-3xl sm:text-5xl lg:text-6xl font-bold text-white leading-[1.1] tracking-tight"
+                  className="font-display text-3xl sm:text-5xl lg:text-6xl font-bold leading-[1.1] tracking-tight"
                 >
                   Engineering{' '}
-                  <span className="text-white drop-shadow-[0_0_15px_rgba(6,182,212,0.15)]">
+                  <span className="glow-text bg-gradient-to-r from-[#7dd3fc] via-[#60a5fa] to-[#3b82f6] bg-clip-text text-transparent font-extrabold tracking-tight">
                     Intelligent Solutions
                   </span>{' '}
                   for Modern Businesses

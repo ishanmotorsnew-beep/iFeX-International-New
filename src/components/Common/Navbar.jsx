@@ -37,7 +37,7 @@ export default function Navbar() {
   const navLinks = BASE_NAV_LINKS.filter((link) => pricingVisible || link.to !== '/pricing');
 
   const linkClass = ({ isActive }) =>
-    `relative rounded-full px-3 py-2 text-base font-semibold tracking-wide transition-all duration-300 ${
+    `relative inline-flex items-center justify-center rounded-full px-4 py-2.5 text-center text-base font-semibold tracking-wide transition-all duration-300 ${
       isActive ? 'text-white' : 'text-white/75 hover:text-white'
     }`;
 
@@ -55,14 +55,12 @@ export default function Navbar() {
         </Link>
 
         <nav
-          className={`flex flex-1 h-14 items-center justify-between rounded-full border px-3 transition-all duration-300 sm:h-16 sm:px-6 ${
-            scrolled
-              ? 'border-white/20 bg-slate-950/95 shadow-lg backdrop-blur-xl'
-              : 'border-white/10 bg-slate-950/80 shadow-md backdrop-blur-sm'
+          className={`liquid-glass-navbar flex h-14 flex-1 items-center justify-between rounded-full px-3 transition-all duration-300 sm:h-16 sm:px-6 ${
+            scrolled ? 'shadow-[0_18px_45px_rgba(2,6,23,0.35)]' : 'shadow-[0_14px_35px_rgba(2,6,23,0.25)]'
           }`}
         >
-          <div className="flex items-center gap-2">
-            <ul className="hidden md:flex items-center gap-2">
+          <div className="flex flex-1 items-center justify-center">
+            <ul className="hidden items-center justify-center gap-2 md:flex">
               {navLinks.map((link) => (
                 <li key={link.to}>
                   <NavLink to={link.to} className={linkClass}>
