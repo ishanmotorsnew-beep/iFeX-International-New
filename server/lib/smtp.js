@@ -1,5 +1,11 @@
+export function normalizeSmtpPassword(pass) {
+  return typeof pass === 'string' ? pass.replace(/\s+/g, '') : '';
+}
+
 export function buildSmtpCandidates({ host, port, secure, user, pass }) {
-  if (!host || !user || !pass) {
+  const normalizedPass = normalizeSmtpPassword(pass);
+
+  if (!host || !user || !normalizedPass) {
     return [];
   }
 
@@ -9,15 +15,22 @@ export function buildSmtpCandidates({ host, port, secure, user, pass }) {
 
   if (isGmail) {
     return [
-      { host, port: 465, secure: true },
-      { host, port: 587, secure: false, tls: { ciphers: 'TLSv1.2' } },
+      { service: 'gmail', auth: { user, pass: normalizedPass } },
+      {
+        host,
+        port: 587,
+        secure: false,
+        requireTLS: true,
+        auth: { user, pass: normalizedPass },
+        tls: { ciphers: 'TLSv1.2' },
+      },
     ];
   }
 
-  const candidates = [{ host, port: configuredPort, secure: configuredSecure }];
+  const candidates = [{ host, port: configuredPort, secure: configuredSecure, auth: { user, pass: normalizedPass } }];
 
   if (configuredPort !== 587 && configuredSecure) {
-    candidates.push({ host, port: 587, secure: false, tls: { ciphers: 'TLSv1.2' } });
+    candidates.push({ host, port: 587, secure: false, auth: { user, pass: normalizedPass }, tls: { ciphers: 'TLSv1.2' } });
   }
 
   return candidates;
