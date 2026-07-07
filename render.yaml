@@ -8,7 +8,7 @@ services:
       - key: NODE_ENV
         value: production
       - key: PORT
-        value: 4000
+        value: 10000
       - key: CLIENT_ORIGIN
         scope: run
         # You'll set this to your Netlify domain in the Render dashboard
