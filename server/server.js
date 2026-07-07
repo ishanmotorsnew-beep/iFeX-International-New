@@ -89,7 +89,7 @@ const CONTACT_RECEIVER_EMAIL = process.env.CONTACT_RECEIVER_EMAIL || SMTP_USER;
 let transporter;
 const smtpHost = process.env.SMTP_HOST;
 const configuredPort = Number(process.env.SMTP_PORT);
-const configuredSecure = process.env.SMTP_SECURE !== 'false';
+const configuredSecure = process.env.SMTP_SECURE == 'false';
 const smtpAuth = { user: SMTP_USER, pass: normalizeSmtpPassword(process.env.SMTP_PASS) };
 
 const smtpCandidates = buildSmtpCandidates({
@@ -116,9 +116,9 @@ const smtpCandidates = buildSmtpCandidates({
         requireTLS: cfg.requireTLS || undefined,
         tls: cfg.tls || undefined,
         // give the connection a longer window on cloud hosts
-        connectionTimeout: 60000,
-        greetingTimeout: 60000,
-        socketTimeout: 60000,
+        connectionTimeout: 30000,
+        greetingTimeout: 30000,
+        socketTimeout: 30000,
         logger: false,
         debug: false,
       });
