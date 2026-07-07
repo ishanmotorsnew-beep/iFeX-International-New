@@ -20,12 +20,12 @@ import {
 } from './contentStore.js';
 import { verifyPassword, issueToken, revokeToken, requireAdmin } from './auth.js';
 import { buildPublicImageUrl } from './lib/imageUrls.js';
-import { buildSmtpCandidates } from './lib/smtp.js';
+import { buildSmtpCandidates, normalizeSmtpPassword } from './lib/smtp.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const app = express();
 const PORT = process.env.PORT || 4000;
-const CLIENT_ORIGIN = process.env.CLIENT_ORIGIN || 'https://ifex.kesug.com';
+const CLIENT_ORIGIN = process.env.CLIENT_ORIGIN || 'http://localhost:5173';
 
 // --- Core middleware -------------------------------------------------------
 app.use(helmet({ crossOriginResourcePolicy: false }));
@@ -90,7 +90,7 @@ let transporter;
 const smtpHost = process.env.SMTP_HOST;
 const configuredPort = Number(process.env.SMTP_PORT);
 const configuredSecure = process.env.SMTP_SECURE !== 'false';
-const smtpAuth = { user: SMTP_USER, pass: process.env.SMTP_PASS };
+const smtpAuth = { user: SMTP_USER, pass: normalizeSmtpPassword(process.env.SMTP_PASS) };
 
 const smtpCandidates = buildSmtpCandidates({
   host: smtpHost,
@@ -112,9 +112,10 @@ const smtpCandidates = buildSmtpCandidates({
         host: cfg.host,
         port: cfg.port,
         secure: cfg.secure,
-        auth: smtpAuth,
+        auth: cfg.auth || smtpAuth,
+        requireTLS: cfg.requireTLS || undefined,
         tls: cfg.tls || undefined,
-        // short timeouts to fail fast and get actionable logs
+        // give the connection a longer window on cloud hosts
         connectionTimeout: 60000,
         greetingTimeout: 60000,
         socketTimeout: 60000,
@@ -133,6 +134,10 @@ const smtpCandidates = buildSmtpCandidates({
       console.error(`SMTP verification failed for ${cfg.host}:${cfg.port} (secure=${cfg.secure}):`, err && err.code ? { code: err.code, message: err.message } : err);
       // try next candidate
     }
+  }
+
+  if (process.env.NODE_ENV === 'production') {
+    console.warn('SMTP verification could not be completed in production. If this is Gmail on Render, outbound SMTP is often blocked; consider switching to a hosted provider such as Resend, SendGrid, or Mailgun.');
   }
 
   // eslint-disable-next-line no-console
