@@ -13,9 +13,8 @@ test('buildSmtpCandidates prefers Gmail-compatible settings', () => {
   });
 
   assert.ok(candidates.length >= 2);
-  assert.equal(candidates[0].host, 'smtp.gmail.com');
-  assert.equal(candidates[0].port, 465);
-  assert.equal(candidates[0].secure, true);
+  assert.equal(candidates[0].service, 'gmail');
+  assert.equal(candidates[0].auth.pass, 'app-password');
   assert.equal(candidates[1].port, 587);
   assert.equal(candidates[1].secure, false);
 });
